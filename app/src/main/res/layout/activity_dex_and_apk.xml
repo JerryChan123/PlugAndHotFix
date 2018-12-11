@@ -6,29 +6,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".versionone.DexAndApkActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:text="简单加载apk以及dex文件"
+        android:textSize="14sp"/>
 
     <Button
-        android:id="@+id/version_one"
+        android:id="@+id/load_dex"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:gravity="center"
-        android:text="版本一"
+        android:text="点击加载dex"
         android:textSize="15sp"/>
 
     <Button
-        android:id="@+id/version_two"
+        android:id="@+id/load_apk"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:gravity="center"
-        android:text="版本二"
-        android:textSize="15sp"/>
-
-    <Button
-        android:id="@+id/version_three"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:gravity="center"
-        android:text="版本三"
+        android:text="点击加载apk"
         android:textSize="15sp"/>
 </LinearLayout>
