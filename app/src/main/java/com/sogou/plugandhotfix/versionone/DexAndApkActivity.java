@@ -74,16 +74,18 @@ public class DexAndApkActivity extends AppCompatActivity {
 
     private void copyToDir(File file) {
         try {
-            InputStream stream = getAssets().open("pluginsimple.dex");
+            String name = "pluginsimple.dex";
+            InputStream stream = getAssets().open(name);
             byte[] readBytes = new byte[1024];
-            File saveFile = new File(file.getAbsolutePath() + "/" + "pluginsimple.dex");
+            File saveFile = new File(file.getAbsolutePath() + "/" + name);
             mJarPath = saveFile.getAbsolutePath();
             if (saveFile.exists()) {
                 saveFile.delete();
             }
             OutputStream outputStream = new FileOutputStream(saveFile);
-            while (stream.read(readBytes) != -1) {
-                outputStream.write(readBytes);
+            int i=0;
+            while ((i=stream.read(readBytes)) >0) {
+                outputStream.write(readBytes,0,i);
             }
             stream.close();
             outputStream.flush();
