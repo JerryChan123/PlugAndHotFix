@@ -1,35 +1,29 @@
 package com.sogou.plugandhotfix.versionone;
 
+import com.sogou.plugandhotfix.AppUtils.AppUtils;
+import com.sogou.plugandhotfix.OwnerClassLoader;
 import com.sogou.plugandhotfix.R;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import dalvik.system.DexClassLoader;
 
 /**
  * 实现文章来源：https://segmentfault.com/a/1190000004062952
  * <p>
  * 该类示例简单加载dex以及apk文件的方式，主要使用DexClassLoader类进行加载，ClassLoader加载外部的Dex或Apk文件，可以加载一些本地APP不存在的类。
- * 使用该方式会造成的问题如下：
- * - 很难使用插件APK里的res资源，这意味着无法使用新的XML布局等资源，无法更改Manifest清单文件，所以无法启动新的Activity等组件
+ * 加载的方式可以通过反射或者接口的方式来进行，然而使用该方式会造成的问题如下：
+ * - 无法使用res目录下的资源，特别是使用XML布局，以及无法通过res资源到达自适应
+ * - 无法动态加载新的Activity等组件，因为这些组件需要在Manifest中注册，动态加载无法更改当前APK的Manifest
  * <p>
- * 加载的方式可以通过反射或者接口的方式来进行
  */
-public class DexAndApkActivity extends AppCompatActivity implements View.OnClickListener {
+public class VersionOneActivity extends AppCompatActivity implements View.OnClickListener {
     private String mJarPath = "";
     private static final String TAG = "DexAndApkActivity";
 
@@ -41,7 +35,7 @@ public class DexAndApkActivity extends AppCompatActivity implements View.OnClick
             loadPlugin("versionone.dex", "PluginTest");
         } else if (id == R.id.load_apk) {
             //加载apk
-            loadPlugin("versione.apk", "com.sogou.plugandhotfix.versionone.PluginTest");
+            loadPlugin("versionone.apk", "com.sogou.plugandhotfix.versionone.PluginTest");
         }
     }
 
@@ -56,8 +50,8 @@ public class DexAndApkActivity extends AppCompatActivity implements View.OnClick
      * }
      */
     private void loadPlugin(String pluginame, String className) {
-        copyToDir(new File(Environment.getExternalStorageDirectory().getAbsolutePath()), pluginame);
-        OwnerClassLoader classLoader = new OwnerClassLoader(mJarPath, getDir("dex", 0).getAbsolutePath(), null, getClassLoader());
+        mJarPath = AppUtils.copyToDir(this, pluginame);
+        OwnerClassLoader classLoader = OwnerClassLoader.newInstance(this, mJarPath, getClassLoader());
         String text = "";
         try {
             Class clazz = classLoader.loadClass(className);
@@ -80,10 +74,10 @@ public class DexAndApkActivity extends AppCompatActivity implements View.OnClick
             e.printStackTrace();
         }
         if (TextUtils.isEmpty(text)) {
-            Toast.makeText(DexAndApkActivity.this, "获取失败", Toast.LENGTH_LONG).show();
+            Toast.makeText(VersionOneActivity.this, "获取失败", Toast.LENGTH_LONG).show();
 
         } else {
-            Toast.makeText(DexAndApkActivity.this, "成功获取方法getText结果：" + text, Toast.LENGTH_LONG).show();
+            Toast.makeText(VersionOneActivity.this, "成功获取方法getText结果：" + text, Toast.LENGTH_LONG).show();
 
         }
 
@@ -97,33 +91,5 @@ public class DexAndApkActivity extends AppCompatActivity implements View.OnClick
         findViewById(R.id.load_apk).setOnClickListener(this);
     }
 
-    private void copyToDir(File file, String name) {
-        try {
-            InputStream stream = getAssets().open(name);
-            byte[] readBytes = new byte[1024];
-            File saveFile = new File(file.getAbsolutePath() + "/" + name);
-            mJarPath = saveFile.getAbsolutePath();
-            if (saveFile.exists()) {
-                saveFile.delete();
-            }
-            OutputStream outputStream = new FileOutputStream(saveFile);
-            int i = 0;
-            while ((i = stream.read(readBytes)) > 0) {
-                outputStream.write(readBytes, 0, i);
-            }
-            stream.close();
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-
-    private static class OwnerClassLoader extends DexClassLoader {
-
-        public OwnerClassLoader(String dexPath, String optimizedDirectory, String librarySearchPath, ClassLoader parent) {
-            super(dexPath, optimizedDirectory, librarySearchPath, parent);
-        }
-    }
 }

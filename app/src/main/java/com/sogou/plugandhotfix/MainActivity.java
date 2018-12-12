@@ -1,7 +1,8 @@
 
 package com.sogou.plugandhotfix;
 
-import com.sogou.plugandhotfix.versionone.DexAndApkActivity;
+import com.sogou.plugandhotfix.versionone.VersionOneActivity;
+import com.sogou.plugandhotfix.versiontwo.VersionTwoActivity;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -20,14 +21,15 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.version_one).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, DexAndApkActivity.class);
+                Intent intent = new Intent(MainActivity.this, VersionOneActivity.class);
                 startActivity(intent);
             }
         });
         findViewById(R.id.version_two).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivity.this, VersionTwoActivity.class);
+                startActivity(intent);
             }
         });
         findViewById(R.id.version_three).setOnClickListener(new View.OnClickListener() {
