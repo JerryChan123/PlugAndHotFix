@@ -1,6 +1,7 @@
 package com.sogou.plugandhotfix;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 /**
@@ -17,7 +18,6 @@ public interface ProxyPluginCallback {
 
     void onStop();
 
-    void attachBaseContext(Context hostActivity);
-
+    void attachHost(Activity activity, Resources resources);
     void onDestroy();
 }
