@@ -27,49 +27,67 @@ import dalvik.system.DexClassLoader;
  * 使用该方式会造成的问题如下：
  * - 很难使用插件APK里的res资源，这意味着无法使用新的XML布局等资源，无法更改Manifest清单文件，所以无法启动新的Activity等组件
  */
-public class DexAndApkActivity extends AppCompatActivity {
+public class DexAndApkActivity extends AppCompatActivity implements View.OnClickListener {
     private String mJarPath = "";
     private static final String TAG = "DexAndApkActivity";
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.load_dex) {
+            loadDex();
+        }
+    }
+
+    /**
+     * Dex文件
+     * <p>
+     * <p>
+     * public class PluginTest{
+     * public String getText(){
+     * return "Hello from PluginTest";
+     * }
+     * }
+     */
+    private void loadDex() {
+        copyToDir(new File(Environment.getExternalStorageDirectory().getAbsolutePath()));
+        OwnerClassLoader classLoader = new OwnerClassLoader(mJarPath, getDir("dex", 0).getAbsolutePath(), null, getClassLoader());
+        String text = "";
+        try {
+            Class clazz = classLoader.loadClass("PluginTest");
+            Method[] methods = clazz.getDeclaredMethods();
+            for (int i = 0; i < methods.length; i++) {
+                Log.e(TAG, methods[i].toString());
+            }
+            Method getText = clazz.getDeclaredMethod("getText");
+            //调用方法
+            text = (String) getText.invoke(clazz.newInstance());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        if (TextUtils.isEmpty(text)) {
+            Toast.makeText(DexAndApkActivity.this, "获取失败", Toast.LENGTH_LONG).show();
+
+        } else {
+            Toast.makeText(DexAndApkActivity.this, "成功获取方法getText结果：" + text, Toast.LENGTH_LONG).show();
+
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dex_and_apk);
-        findViewById(R.id.load_dex).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                copyToDir(new File(Environment.getExternalStorageDirectory().getAbsolutePath()));
-                OwnerClassLoader classLoader = new OwnerClassLoader(mJarPath, getDir("dex", 0).getAbsolutePath(), null, getClassLoader());
-                String text = "";
-                try {
-                    Class clazz = classLoader.loadClass("PluginTest");
-                    Method[] methods = clazz.getDeclaredMethods();
-                    for (int i = 0; i < methods.length; i++) {
-                        Log.e(TAG, methods[i].toString());
-                    }
-                    Method getText = clazz.getDeclaredMethod("getText");
-                    //调用方法
-                    text = (String) getText.invoke(clazz.newInstance());
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                if (TextUtils.isEmpty(text)) {
-                    Toast.makeText(DexAndApkActivity.this, "获取失败" , Toast.LENGTH_LONG).show();
-
-                } else {
-                    Toast.makeText(DexAndApkActivity.this, "成功获取方法getText结果：" + text, Toast.LENGTH_LONG).show();
-
-                }
-            }
-        });
+        findViewById(R.id.load_dex).setOnClickListener(this);
     }
 
     private void copyToDir(File file) {
@@ -83,9 +101,9 @@ public class DexAndApkActivity extends AppCompatActivity {
                 saveFile.delete();
             }
             OutputStream outputStream = new FileOutputStream(saveFile);
-            int i=0;
-            while ((i=stream.read(readBytes)) >0) {
-                outputStream.write(readBytes,0,i);
+            int i = 0;
+            while ((i = stream.read(readBytes)) > 0) {
+                outputStream.write(readBytes, 0, i);
             }
             stream.close();
             outputStream.flush();
