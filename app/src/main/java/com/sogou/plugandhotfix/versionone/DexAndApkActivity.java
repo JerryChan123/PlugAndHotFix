@@ -26,6 +26,8 @@ import dalvik.system.DexClassLoader;
  * 该类示例简单加载dex以及apk文件的方式，主要使用DexClassLoader类进行加载，ClassLoader加载外部的Dex或Apk文件，可以加载一些本地APP不存在的类。
  * 使用该方式会造成的问题如下：
  * - 很难使用插件APK里的res资源，这意味着无法使用新的XML布局等资源，无法更改Manifest清单文件，所以无法启动新的Activity等组件
+ * <p>
+ * 加载的方式可以通过反射或者接口的方式来进行
  */
 public class DexAndApkActivity extends AppCompatActivity implements View.OnClickListener {
     private String mJarPath = "";
@@ -35,7 +37,11 @@ public class DexAndApkActivity extends AppCompatActivity implements View.OnClick
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.load_dex) {
-            loadDex();
+            //加载dex
+            loadPlugin("versionone.dex", "PluginTest");
+        } else if (id == R.id.load_apk) {
+            //加载apk
+            loadPlugin("versione.apk", "com.sogou.plugandhotfix.versionone.PluginTest");
         }
     }
 
@@ -49,12 +55,12 @@ public class DexAndApkActivity extends AppCompatActivity implements View.OnClick
      * }
      * }
      */
-    private void loadDex() {
-        copyToDir(new File(Environment.getExternalStorageDirectory().getAbsolutePath()));
+    private void loadPlugin(String pluginame, String className) {
+        copyToDir(new File(Environment.getExternalStorageDirectory().getAbsolutePath()), pluginame);
         OwnerClassLoader classLoader = new OwnerClassLoader(mJarPath, getDir("dex", 0).getAbsolutePath(), null, getClassLoader());
         String text = "";
         try {
-            Class clazz = classLoader.loadClass("PluginTest");
+            Class clazz = classLoader.loadClass(className);
             Method[] methods = clazz.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
                 Log.e(TAG, methods[i].toString());
@@ -88,11 +94,11 @@ public class DexAndApkActivity extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dex_and_apk);
         findViewById(R.id.load_dex).setOnClickListener(this);
+        findViewById(R.id.load_apk).setOnClickListener(this);
     }
 
-    private void copyToDir(File file) {
+    private void copyToDir(File file, String name) {
         try {
-            String name = "pluginsimple.dex";
             InputStream stream = getAssets().open(name);
             byte[] readBytes = new byte[1024];
             File saveFile = new File(file.getAbsolutePath() + "/" + name);
