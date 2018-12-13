@@ -11,6 +11,7 @@ import android.view.View;
  * 第一种方式可以加载一些本地APP不存在的Java类，然而并不能解决动态加载Activity和resource的问题，由于Activity执行需要在Manifest中注册，也就是
  * 需要Android的上下文环境，因此提出的解决方案是：
  * - 在项目中实现注册一个Activity作为插件的代理Activity实现
+ * - 通过AssetManage.addAssetPath()方式加载一个apk的资源文件
  */
 public class VersionTwoActivity extends AppCompatActivity implements View.OnClickListener {
 
