@@ -12,6 +12,8 @@ import android.view.View;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.Map;
 
 /**
  * 第三种方式启动
@@ -32,18 +34,25 @@ public class VersionThreeActivity extends AppCompatActivity implements View.OnCl
         } else if (R.id.test_hook_binder == id) {
             //测试Hook ClipboardManager
             // http://weishu.me/2016/02/16/understand-plugin-framework-binder-hook/
-
+            getClipBoardManager();
         }
     }
-    private void getServiceManager(){
-        try {
 
+    private void getClipBoardManager() {
+        try {
+            //获取ServiceManager
             Class sm = Class.forName("android.os.ServiceManager");
             //获取getService方法
             Method method = sm.getDeclaredMethod("getService", String.class);
-            //静态方法，可以直接获得Clipboard对象
-            IBinder iBinder = (IBinder) method.invoke(null, Context.CLIPBOARD_SERVICE);
-
+            //静态方法，可以直接获得Clipboard对象，一般来说这是一个Binder代理对象
+            IBinder clipboard = (IBinder) method.invoke(null, Context.CLIPBOARD_SERVICE);
+            IBinder hookedBinder = (IBinder) Proxy.newProxyInstance(sm.getClassLoader(),  new Class<?>[] { IBinder.class }, new BinderProxyHookHandler(clipboard));
+            // 把这个hook过的Binder代理对象放进ServiceManager的cache里面
+// 以后查询的时候 会优先查询缓存里面的Binder, 这样就会使用被我们修改过的Binder了
+            Field cacheField = sm.getDeclaredField("sCache");
+            cacheField.setAccessible(true);
+            Map<String, IBinder> cache = (Map) cacheField.get(null);
+            cache.put(CLIPBOARD_SERVICE, hookedBinder);
         } catch (Exception e) {
 
         }

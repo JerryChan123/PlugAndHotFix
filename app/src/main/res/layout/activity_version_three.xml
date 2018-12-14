@@ -18,4 +18,11 @@
         android:id="@+id/test_hook_binder"
         android:text="测试hook Binder对象"
         android:layout_height="50dp"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:id="@+id/test_edit"
+        android:textSize="15sp"
+        android:textColor="#000000"
+        android:hint="这里测试"
+        android:layout_height="wrap_content"/>
 </LinearLayout>
