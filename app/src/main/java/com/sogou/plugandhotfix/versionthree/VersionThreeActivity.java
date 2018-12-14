@@ -17,6 +17,7 @@ import java.util.Map;
 
 /**
  * 第三种方式启动
+ * DroidPlugin的文章分析：https://blog.csdn.net/zhangyawen1i/article/details/52000689
  */
 public class VersionThreeActivity extends AppCompatActivity implements View.OnClickListener {
     private Object mActThread;
