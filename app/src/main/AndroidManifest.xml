@@ -27,6 +27,10 @@
             android:label="@string/title_activity_proxy"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity android:name=".versionthree.VersionThreeActivity">
+        </activity>
+        <activity android:name=".versionthree.TestActivity">
+        </activity>
     </application>
 
 </manifest>

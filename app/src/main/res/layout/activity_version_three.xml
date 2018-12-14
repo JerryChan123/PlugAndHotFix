@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".versionthree.VersionThreeActivity">
+    <Button
+        android:layout_width="match_parent"
+        android:id="@+id/start_act"
+        android:text="测试hook启动Activity"
+        android:layout_height="50dp"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:id="@+id/test_hook_binder"
+        android:text="测试hook Binder对象"
+        android:layout_height="50dp"/>
+</LinearLayout>

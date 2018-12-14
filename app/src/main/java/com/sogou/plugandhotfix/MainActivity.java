@@ -2,6 +2,7 @@
 package com.sogou.plugandhotfix;
 
 import com.sogou.plugandhotfix.versionone.VersionOneActivity;
+import com.sogou.plugandhotfix.versionthree.VersionThreeActivity;
 import com.sogou.plugandhotfix.versiontwo.VersionTwoActivity;
 
 import android.content.Intent;
@@ -35,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.version_three).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(MainActivity.this, VersionThreeActivity.class);
+                startActivity(intent);
             }
         });
     }
