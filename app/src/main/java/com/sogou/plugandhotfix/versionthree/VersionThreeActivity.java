@@ -3,11 +3,14 @@ package com.sogou.plugandhotfix.versionthree;
 import com.sogou.plugandhotfix.R;
 
 import android.app.Instrumentation;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import java.lang.reflect.Field;
@@ -36,7 +39,16 @@ public class VersionThreeActivity extends AppCompatActivity implements View.OnCl
             //测试Hook ClipboardManager
             // http://weishu.me/2016/02/16/understand-plugin-framework-binder-hook/
             getClipBoardManager();
+            String text = getCopyText();
+            Log.e("dasda", text);
         }
+    }
+
+    private String getCopyText(){
+        ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipData data = cm.getPrimaryClip();
+        ClipData.Item item = data.getItemAt(0);
+        return item.getText().toString();
     }
 
     private void getClipBoardManager() {
